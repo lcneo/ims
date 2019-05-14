@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="../static/js/layui/css/layui.css"  media="all">
+  <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+</head>
+<body>
+ 
+<table class="layui-hide" id="test" lay-filter="test"></table>
+ 
+<script type="text/html" id="toolbarDemo">
+<!--   <div class="layui-select-title">&nbsp;<input type="text" placeholder="搜索组件或模块" value="" class="layui-input" style="width: 200px">
+  </div> -->
+  <!-- <div class="layui-btn-container">
+    
+    <button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>
+    <button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>
+    <button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button>
+  </div> -->
+</script>
+<script type="text/html" id="barDemo">
+  <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+  <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+              
+          
+<script src="../static/js/layui/layui.js" charset="utf-8"></script>
+
+<!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 --> 
+ 
+<script>
+layui.use('table', function(){
+  var table = layui.table;
+  table.render({
+    elem: '#test'
+    ,data: {{data | safe}}
+    ,toolbar: '#toolbarDemo'
+    ,title: '用户数据表'
+    ,totalRow: true
+    ,cols: [[
+      {type: 'checkbox', fixed: 'left'}
+      ,{field: 'class_no', title: '班级号'}
+      ,{field: 'class_name', title: '班级名'}
+      ,{field: 'class_size', title: '班级人数'}
+      ,{field: 'professional', title: '专业', edit: 'text'}
+      ,{field: 'department_no', title: '系编号', edit: 'text'}
+      ,{fixed: 'right', title:'操作', toolbar: '#barDemo', width:150}
+
+    ]]
+    ,page: true
+  });
+  
+  //工具栏事件
+  table.on('toolbar(test)', function(obj){
+    var checkStatus = table.checkStatus(obj.config.id);
+    switch(obj.event){
+      case 'getCheckData':
+        var data = checkStatus.data;
+        layer.alert(JSON.stringify(data));
+      break;
+      case 'getCheckLength':
+        var data = checkStatus.data;
+        layer.msg('选中了：'+ data.length + ' 个');
+      break;
+      case 'isAll':
+        layer.msg(checkStatus.isAll ? '全选': '未全选')
+      break;
+    };
+  });
+  //监听单元格编辑
+  table.on('edit(test)', function(obj){
+    var value = obj.value //得到修改后的值
+    ,data = obj.data //得到所在行所有键值
+    ,field = obj.field; //得到字段
+    layer.msg('[ID: '+ data.id +'] ' + field + ' 字段更改为：'+ value);
+  });
+//监听工具条
+  table.on('tool(test)', function(obj){
+    var data = obj.data;
+    if(obj.event === 'detail'){
+      layer.msg('ID：'+ data.id + ' 的查看操作');
+    } else if(obj.event === 'del'){
+      layer.confirm('真的删除行么', function(index){
+        obj.del();
+        var xhr = new XMLHttpRequest();
+      xhr.open("GET","../api?method=del&type=collage&values="+JSON.stringify(obj.data),true)
+      xhr.onload = function(){
+        if(this.status == 200){
+          
+          var rsp = JSON.parse(this.responseText)
+          if (rsp.value='true'){
+            layer.alert("删除成功!")
+          }
+          else{
+            layer.alert("删除失败!")
+          }
+        }
+      }
+      xhr.send();
+        layer.close(index);
+      });
+      
+    } else if(obj.event === 'edit'){
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET","../api?method=update&type=collage&values="+JSON.stringify(data),true)
+      xhr.onload = function(){
+        if(this.status == 200){
+          
+          var rsp = JSON.parse(this.responseText)
+          if (rsp.value='true'){
+            layer.alert("修改成功!")
+          }
+          else{
+            layer.alert("修改失败!")
+          }
+        }
+      }
+      xhr.send();
+      // layer.alert('编辑行：<br>'+ JSON.stringify(data))
+
+
+    }
+  });
+  
+  var $ = layui.$, active = {
+    getCheckData: function(){ //获取选中数据
+      var checkStatus = table.checkStatus('idTest')
+      ,data = checkStatus.data;
+      layer.alert(JSON.stringify(data));
+    }
+    ,getCheckLength: function(){ //获取选中数目
+      var checkStatus = table.checkStatus('idTest')
+      ,data = checkStatus.data;
+      layer.msg('选中了：'+ data.length + ' 个');
+    }
+    ,isAll: function(){ //验证是否全选
+      var checkStatus = table.checkStatus('idTest');
+      layer.msg(checkStatus.isAll ? '全选': '未全选')
+    }
+  };
+});
+
+</script>
+
+</body>
+</html>

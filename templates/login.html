@@ -1,0 +1,71 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>登陆框</title>
+	<link rel="stylesheet" href="/static/css/login.css">
+
+    <script>
+        function buttom_submite(){
+            var form = document.getElementById('login_form');
+            form.submit();
+        }
+        function keyup_submit(e) {
+        	var evt = window.events || e
+        	if (evt.keyCode == 13){
+        		var form = document.getElementById('login_form');
+            	form.submit();
+        	}
+
+        	// body...
+        }
+    </script>
+</head>
+<body>
+	<div class="wrapper">
+		<div class="header"><span><!-- love.ly --><!-- Information Managrate System -->学生信息管理系统</span></div>
+		<form action="../ims/" method="post" id="login_form">
+			<ul>
+				<li>
+					<div class="text">
+						<span class="yonghu">&#xe601;</span><input type="text" placeholder="账号" name="username">
+					</div>
+				</li>
+				<li>
+					<div class="password">
+						<span class="mima">&#xe600;</span><input type="password" placeholder="••••••••••••••" name="password" onkeydown="keyup_submit(event)">
+					</div>
+				</li>
+				<li class="remember">
+					<input id="checkbox" type="checkbox"><label for="checkbox"></label>Remember Me
+				</li>
+				<li>
+					<a href="">Forgot username or password?</a>
+				</li>
+				<li>
+					<input type="button" value="登录" onclick="buttom_submite()">
+				</li>
+			</ul>
+		</form>
+		<div class="footer">
+			<p>Information Managrate System <a href="">Copyright ©2019 neo wong & mali</a></p>
+			<p><a href="https://mit-license.org/" target="_blank">MIT License </a> | <a href="https://github.com/lcneo" target="_blank">GitHub
+			</a> | <a href="http://www.beian.miit.gov.cn" target="_blank">京ICP备17066363号</a> | <a href="#">Contact Me</a></p>
+		</div>
+	</div>
+	<!-- <link rel="stylesheet" href="../static/js/layui/css/layui.css"  media="all"> -->
+	<script src="/static/js/layui/layui.js" charset="utf-8"></script>
+	<script type="text/javascript">
+		var success={{value}}
+		if (success == false){
+			success = true;
+			layui.use('layer', function(){
+			  var layer = layui.layer;
+			  
+			  layer.msg('帐号或密码错误');
+			});              
+		}
+	</script>
+</body>
+</html>
